@@ -226,5 +226,33 @@ public class Data {
        System.out.println("Duplicates: " + duplicates);
        System.out.println("Empty documents: " + emptyDocs);
     }
+    
+    public ArrayList<String> getDocs() {
+    	int nulls = 0;
+    	ArrayList<String> docs = new ArrayList<String>();
+    	for (int i = 0; i < dataRows.size(); i++) {
+    		if (dataRows.get(i).getInfoGiv() == null) {
+    			nulls++;
+    		} else {
+    			docs.add(dataRows.get(i).getText());
+    		}
+    	}
+    	System.out.println("Unlabeled documents not added to myDocs: " + nulls);
+    	return docs;
+    }
+    
+    public ArrayList<Integer> getLabels() {
+    	int nulls = 0;
+    	ArrayList<Integer> labels = new ArrayList<Integer>();
+    	for (int i = 0; i < dataRows.size(); i++) {
+    		if (dataRows.get(i).getInfoGiv() == null) {
+    			nulls++;
+    		} else {
+    			labels.add(Integer.parseInt(dataRows.get(i).getInfoGiv()));
+    		}
+    	}
+    	System.out.println("Unlabeled documents not added to myDocs: " + nulls);
+    	return labels;
+    }
 
 }
