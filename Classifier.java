@@ -23,10 +23,11 @@ public class Classifier {
 	
 	/**
 	 * Build a Naive Bayes classifier using a training document set
-	 * @param trainDataFolder the training document folder
+	 * @param trainDocs the training document folder
+	 * @param myLabels labels of the training documents
 	 */
-	public Classifier(ArrayList<String> docs, ArrayList<Integer> myLabels) {
-		trainingDocs = docs;
+	public Classifier(ArrayList<String> trainDocs, ArrayList<Integer> myLabels) {
+		trainingDocs = trainDocs;
 		trainingLabels = myLabels;
 		numClasses = 4; // hard code num of classes
 		classCounts = new int[numClasses];
@@ -138,7 +139,8 @@ public class Classifier {
 	
 	/**
 	 *  Classify a set of testing documents and report the accuracy
-	 * @param testDataFolder fold that contains the testing documents
+	 * @param  docs test documents
+	 * @param labels labels for test documents
 	 * @return classification accuracy
 	 */
 	public double classifyAll(ArrayList<String> docs, ArrayList<Integer> labels) {
