@@ -18,7 +18,7 @@ public class Data {
 
     //replace with your corresponding credentials
     static final String USER = "root";
-    static final String PASS = "neirage";
+    static final String PASS = "password";
 
     public static ArrayList<Row> dataRows = new ArrayList<Row>();
     public String content="";
