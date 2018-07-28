@@ -43,7 +43,7 @@ public class Parser {
         //File test = new File("index.html");
         //System.out.println(test.listFiles());
         stopList = loadStopwords("src/ARC/input/stopwords.txt");
-        System.out.println("Stopwords: " + stopList.length);
+        //System.out.println("Stopwords: " + stopList.length);
         Arrays.sort(stopList);
         
         ArrayList<String> terms = tokenization(content);
