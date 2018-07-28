@@ -18,6 +18,15 @@ public class Parser {
     public static ArrayList<Integer> termFrequency;
     public ArrayList<ArrayList<Integer>> docLists;
     public Data data;
+    ArrayList<String> vocabulary;
+    ArrayList<Integer> termFreqs;
+    
+    ArrayList<String> cleanedTrainingDocs;
+    ArrayList<String> cleanedTestDocs;
+    ArrayList<Integer> cleanedTrainingLabels;
+    ArrayList<Integer> cleanedTestLabels;
+    ArrayList<Integer> trainingLabels;
+    ArrayList<Integer> testLabels;
 
     public Parser(){
     	data = new Data();
@@ -44,18 +53,68 @@ public class Parser {
         // Get indices to split data set
         int[] indices = IntStream.rangeClosed(0, myDocs.size()-1).toArray();
         int splitIndex = (int)Math.floor(myDocs.size()*0.8);
-        System.out.println("Splitting on " + splitIndex);
+        System.out.println("Splitting training/test on index " + splitIndex + " out of " + myDocs.size());
         
-        // Split dataset into training and test sets
+        // Split dataset into training and test sets ADD LOOPING HERE FOR CROSS VALIDATION
         ArrayList<String> trainingDocs = new ArrayList<String>(myDocs.subList(0, splitIndex));
-        ArrayList<Integer> trainingLabels = new ArrayList<Integer>(myLabels.subList(0, splitIndex));
+        trainingLabels = new ArrayList<Integer>(myLabels.subList(0, splitIndex));
         ArrayList<String> testDocs = new ArrayList<String>(myDocs.subList(splitIndex, myDocs.size()));
-        ArrayList<Integer> testLabels = new ArrayList<Integer>(myLabels.subList(splitIndex, myLabels.size()));
+        testLabels = new ArrayList<Integer>(myLabels.subList(splitIndex, myLabels.size()));
         
         // Naive Bayes
         Classifier nbc = new Classifier(trainingDocs, trainingLabels);
         double accuracy = nbc.classifyAll(testDocs, testLabels);
-        System.out.println("Accuracy: " + accuracy);
+        System.out.println(String.format("Accuracy: %2.3f", accuracy));
+        
+        // Naive Bayes with stopword removal
+        System.out.println();
+        vocabulary = new ArrayList<String>();
+        termFreqs = new ArrayList<Integer>();
+        ArrayList<String> cleanedTrainingDocs = removeStopwords(trainingDocs, trainingLabels, "training");
+        ArrayList<String> cleanedTestDocs = removeStopwords(testDocs, testLabels, "test");
+        System.out.println("Docs: " + cleanedTrainingDocs.size() + " Labels: " + cleanedTrainingLabels.size());
+        System.out.println("No.of tokens: " + vocabulary.size());
+        Classifier nbc2 = new Classifier(cleanedTrainingDocs, cleanedTrainingLabels);
+        System.out.println("Docs: " + cleanedTestDocs.size() + " Labels: " + cleanedTestLabels.size());
+        accuracy = nbc2.classifyAll(cleanedTestDocs, cleanedTestLabels);
+        System.out.println(String.format("Accuracy: %2.3f", accuracy));
+    }
+    
+    public ArrayList<String> removeStopwords(ArrayList<String> docs, ArrayList<Integer> labels, String which) {
+    	ArrayList<String> cleanedDocs = new ArrayList<String>();
+    	ArrayList<Integer> cleanedLabels = new ArrayList<Integer>();
+    	
+    	for (int i = 0; i < docs.size(); i++) {
+        	ArrayList<String> review = new ArrayList<String>();
+        	String[] tokens = docs.get(i).split("[ .,&%$#!/+()-*^?:\"--]+");
+        	for (String token : tokens) {
+        		// If new term & not a stopword
+        		if (!vocabulary.contains(token) && searchStopword(token) == -1) {
+        			review.add(token); // keep in review
+        			vocabulary.add(token);
+        			termFreqs.add(1);
+        		} else if (vocabulary.contains(token)) {
+        			// If term exists in vocabulary (and is not stopword), increment freq
+        			int index = vocabulary.indexOf(token);
+        			int freq = termFreqs.get(index);
+        			termFreqs.set(index, freq++);
+        			review.add(token);
+        		}
+        	}
+        	// Don't add review/label if it is stripped of all words
+        	if (review.size() != 0) {
+        		cleanedDocs.add(String.join(" ", review));
+        		cleanedLabels.add(labels.get(i));
+        	}
+        }
+    	
+    	if (which.equals("training")) {
+    		cleanedTrainingLabels = cleanedLabels;
+		} else if (which.equals("test")) {
+			cleanedTestLabels = cleanedLabels;
+		}
+    	
+    	return cleanedDocs;
     }
 
     public String[] loadStopwords(String stopwordsFile){
@@ -136,7 +195,7 @@ public class Parser {
         for(int k=0; k<listNode.size(); k++){
             String s= (listNode.get(k)).word;
             Integer tf = ((listNode.get(k)).freq);
-            System.out.println(s+"\t"+ Integer.toString(tf));
+            // System.out.println(s+"\t"+ Integer.toString(tf));
         }
 
     }

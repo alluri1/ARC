@@ -18,7 +18,7 @@ public class Data {
 
     //replace with your corresponding credentials
     static final String USER = "root";
-    static final String PASS = "password";
+    static final String PASS = "neirage";
 
     public static ArrayList<Row> dataRows = new ArrayList<Row>();
     public String content="";
@@ -237,6 +237,7 @@ public class Data {
     			docs.add(dataRows.get(i).getText());
     		}
     	}
+    	System.out.println("Total documents: " + docs.size());
     	System.out.println("Unlabeled documents not added to myDocs: " + nulls);
     	return docs;
     }
@@ -251,6 +252,7 @@ public class Data {
     			labels.add(Integer.parseInt(dataRows.get(i).getInfoGiv()));
     		}
     	}
+    	System.out.println("Total labels: " + labels.size());
     	System.out.println("Unlabeled documents not added to myDocs: " + nulls);
     	return labels;
     }

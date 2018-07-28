@@ -45,7 +45,6 @@ public class Classifier {
 		// For each training document, based on its class
 		for (int i = 0; i < trainingLabels.size(); i++){
 			// Increment class count (this is why integers provide convenience, they act as indexes here)
-			System.out.println(trainingLabels.get(i));
 			classCounts[trainingLabels.get(i)]++; 
 			// Concatenate its string to the big class string
 			classStrings[trainingLabels.get(i)] += (trainingDocs.get(i) + " ");
