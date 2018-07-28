@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Parser {
@@ -50,23 +51,43 @@ public class Parser {
         //System.out.println("No.of terms: "+ Integer.toString(terms.size()));
         sortTerms(terms);
         
-        // Get indices to split data set
+     // Get indices to split data set
         double avgAccuracy = 0;
         for (int i = 0; i < 5; i++) {
-        	int[] indices = IntStream.rangeClosed(0, myDocs.size()-1).toArray();
+        	ArrayList<Integer> indices = new ArrayList<Integer>(); 
+        	for (int j = 0; j < myDocs.size(); j++) {
+        		indices.add(j);
+        	}
+        	Collections.shuffle(indices);
+        	System.out.println("First index is... " + indices.get(0));
+        	
             int splitIndex = (int)Math.floor(myDocs.size()*0.8);
-            System.out.println("Splitting training/test on index " + splitIndex + " out of " + myDocs.size());
             
-            // Split dataset into training and test sets ADD LOOPING HERE FOR CROSS VALIDATION
-            ArrayList<String> trainingDocs = new ArrayList<String>(myDocs.subList(0, splitIndex));
-            trainingLabels = new ArrayList<Integer>(myLabels.subList(0, splitIndex));
-            ArrayList<String> testDocs = new ArrayList<String>(myDocs.subList(splitIndex, myDocs.size()));
-            testLabels = new ArrayList<Integer>(myLabels.subList(splitIndex, myLabels.size()));
+            ArrayList<Integer> trainIndices = new ArrayList<Integer>(indices.subList(0, splitIndex));
+            ArrayList<Integer> testIndices = new ArrayList<Integer>(indices.subList(splitIndex,  myLabels.size()));
             
-            // Naive Bayes
-            Classifier nbc = new Classifier(trainingDocs, trainingLabels);
-            double accuracy = nbc.classifyAll(testDocs, testLabels);
-            System.out.println(String.format("Accuracy: %2.3f", accuracy));
+            // Split dataset into training and test sets 
+            ArrayList<String> trainingDocs = (ArrayList<String>) trainIndices.stream()
+                    .map(myDocs::get)
+                    .collect(Collectors.toList());
+            ArrayList<Integer> trainingLabels = (ArrayList<Integer>) trainIndices.stream()
+                    .map(myLabels::get)
+                    .collect(Collectors.toList());
+            ArrayList<String> testDocs = (ArrayList<String>) testIndices.stream()
+                    .map(myDocs::get)
+                    .collect(Collectors.toList());
+            ArrayList<Integer> testLabels = (ArrayList<Integer>) testIndices.stream()
+                    .map(myLabels::get)
+                    .collect(Collectors.toList());
+            
+            // Naive Bayes, perform once
+            double accuracy;
+            if (i == 0) {
+            	System.out.println("\nWithout stopword removal:");
+                Classifier nbc = new Classifier(trainingDocs, trainingLabels);
+                accuracy = nbc.classifyAll(testDocs, testLabels);
+                System.out.println(String.format("Accuracy: %2.3f", accuracy));
+            }
             
             // Naive Bayes with stopword removal
             System.out.println();
@@ -74,10 +95,10 @@ public class Parser {
             termFreqs = new ArrayList<Integer>();
             ArrayList<String> cleanedTrainingDocs = removeStopwords(trainingDocs, trainingLabels, "training");
             ArrayList<String> cleanedTestDocs = removeStopwords(testDocs, testLabels, "test");
-            System.out.println("Docs: " + cleanedTrainingDocs.size() + " Labels: " + cleanedTrainingLabels.size());
-            System.out.println("No.of tokens: " + vocabulary.size());
+            System.out.println("Training Docs: " + cleanedTrainingDocs.size() + " Labels: " + cleanedTrainingLabels.size());
             Classifier nbc2 = new Classifier(cleanedTrainingDocs, cleanedTrainingLabels);
-            System.out.println("Docs: " + cleanedTestDocs.size() + " Labels: " + cleanedTestLabels.size());
+            System.out.println("Test Docs: " + cleanedTestDocs.size() + " Labels: " + cleanedTestLabels.size());
+            System.out.println("No.of tokens: " + vocabulary.size());
             accuracy = nbc2.classifyAll(cleanedTestDocs, cleanedTestLabels);
             System.out.println(String.format("Accuracy: %2.3f", accuracy));
             avgAccuracy += accuracy;

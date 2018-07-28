@@ -35,7 +35,7 @@ public class Classifier {
 		classTokenCounts = new int[numClasses];
 		condProb = new HashMap[numClasses];
 		vocabulary = new HashSet<String>();
-		Double threshold =2.0;
+		Double threshold =10.0;
 		
 		// For each class, initialize classString & class conditional probability hashmap
 		for (int i = 0; i < numClasses; i++) {
@@ -79,6 +79,7 @@ public class Classifier {
 		for(int i = 0; i < numClasses; i++){
 			Iterator<Map.Entry<String, Double>> iterator = condProb[i].entrySet().iterator();
 			int vSize = vocabulary.size();
+			int tokensImpacted = 0;
 			while (iterator.hasNext()) {
 				Map.Entry<String, Double> entry = iterator.next();
 				String token = entry.getKey();
@@ -87,12 +88,13 @@ public class Classifier {
 					count = (count+1)/(classTokenCounts[i]+vSize); // conditional probability equation with Laplace smoothing
 					condProb[i].put(token, count);
 				}else{
+					tokensImpacted++;
 					//System.out.println("Removing token: "+token +"\tFrequency: "+ count.intValue());
 					iterator.remove();
 				}
-
 			}
 			// System.out.println(condProb[i]); // print out all conditional probabilities for each term in the class
+			System.out.println("Tokens impacted by frequency extraction: " + tokensImpacted);
 		}
 	}
 	
