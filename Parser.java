@@ -51,33 +51,40 @@ public class Parser {
         sortTerms(terms);
         
         // Get indices to split data set
-        int[] indices = IntStream.rangeClosed(0, myDocs.size()-1).toArray();
-        int splitIndex = (int)Math.floor(myDocs.size()*0.8);
-        System.out.println("Splitting training/test on index " + splitIndex + " out of " + myDocs.size());
+        double avgAccuracy = 0;
+        for (int i = 0; i < 5; i++) {
+        	int[] indices = IntStream.rangeClosed(0, myDocs.size()-1).toArray();
+            int splitIndex = (int)Math.floor(myDocs.size()*0.8);
+            System.out.println("Splitting training/test on index " + splitIndex + " out of " + myDocs.size());
+            
+            // Split dataset into training and test sets ADD LOOPING HERE FOR CROSS VALIDATION
+            ArrayList<String> trainingDocs = new ArrayList<String>(myDocs.subList(0, splitIndex));
+            trainingLabels = new ArrayList<Integer>(myLabels.subList(0, splitIndex));
+            ArrayList<String> testDocs = new ArrayList<String>(myDocs.subList(splitIndex, myDocs.size()));
+            testLabels = new ArrayList<Integer>(myLabels.subList(splitIndex, myLabels.size()));
+            
+            // Naive Bayes
+            Classifier nbc = new Classifier(trainingDocs, trainingLabels);
+            double accuracy = nbc.classifyAll(testDocs, testLabels);
+            System.out.println(String.format("Accuracy: %2.3f", accuracy));
+            
+            // Naive Bayes with stopword removal
+            System.out.println();
+            vocabulary = new ArrayList<String>();
+            termFreqs = new ArrayList<Integer>();
+            ArrayList<String> cleanedTrainingDocs = removeStopwords(trainingDocs, trainingLabels, "training");
+            ArrayList<String> cleanedTestDocs = removeStopwords(testDocs, testLabels, "test");
+            System.out.println("Docs: " + cleanedTrainingDocs.size() + " Labels: " + cleanedTrainingLabels.size());
+            System.out.println("No.of tokens: " + vocabulary.size());
+            Classifier nbc2 = new Classifier(cleanedTrainingDocs, cleanedTrainingLabels);
+            System.out.println("Docs: " + cleanedTestDocs.size() + " Labels: " + cleanedTestLabels.size());
+            accuracy = nbc2.classifyAll(cleanedTestDocs, cleanedTestLabels);
+            System.out.println(String.format("Accuracy: %2.3f", accuracy));
+            avgAccuracy += accuracy;
+        }
+        avgAccuracy = avgAccuracy/5.0;
+        System.out.println("\nAverage accuracy: " + avgAccuracy);
         
-        // Split dataset into training and test sets ADD LOOPING HERE FOR CROSS VALIDATION
-        ArrayList<String> trainingDocs = new ArrayList<String>(myDocs.subList(0, splitIndex));
-        trainingLabels = new ArrayList<Integer>(myLabels.subList(0, splitIndex));
-        ArrayList<String> testDocs = new ArrayList<String>(myDocs.subList(splitIndex, myDocs.size()));
-        testLabels = new ArrayList<Integer>(myLabels.subList(splitIndex, myLabels.size()));
-        
-        // Naive Bayes
-        Classifier nbc = new Classifier(trainingDocs, trainingLabels);
-        double accuracy = nbc.classifyAll(testDocs, testLabels);
-        System.out.println(String.format("Accuracy: %2.3f", accuracy));
-        
-        // Naive Bayes with stopword removal
-        System.out.println();
-        vocabulary = new ArrayList<String>();
-        termFreqs = new ArrayList<Integer>();
-        ArrayList<String> cleanedTrainingDocs = removeStopwords(trainingDocs, trainingLabels, "training");
-        ArrayList<String> cleanedTestDocs = removeStopwords(testDocs, testLabels, "test");
-        System.out.println("Docs: " + cleanedTrainingDocs.size() + " Labels: " + cleanedTrainingLabels.size());
-        System.out.println("No.of tokens: " + vocabulary.size());
-        Classifier nbc2 = new Classifier(cleanedTrainingDocs, cleanedTrainingLabels);
-        System.out.println("Docs: " + cleanedTestDocs.size() + " Labels: " + cleanedTestLabels.size());
-        accuracy = nbc2.classifyAll(cleanedTestDocs, cleanedTestLabels);
-        System.out.println(String.format("Accuracy: %2.3f", accuracy));
     }
     
     public ArrayList<String> removeStopwords(ArrayList<String> docs, ArrayList<Integer> labels, String which) {
