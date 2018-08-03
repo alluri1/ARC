@@ -28,6 +28,14 @@ public class Parser {
     ArrayList<Integer> cleanedTestLabels;
     ArrayList<Integer> trainingLabels;
     ArrayList<Integer> testLabels;
+    
+    // Values to use in user interface
+    // Will have main method in interface, create Parser object there
+    double avgAccuracy; // overall accuracy
+    double avgInfoGivAccuracy; // overall info_giving class accuracy (class 0)
+    double avgInfoReqAccuracy; // overall info_request class accuracy (class 1)
+    double avgFeatureReqAccuracy; // overall feature_request class accuracy (class 2)
+    double avgBugRepAccuracy; // overall bug_report class accuracy (class 3)
 
     public Parser(){
     	data = new Data();
@@ -51,13 +59,20 @@ public class Parser {
         //System.out.println("No.of terms: "+ Integer.toString(terms.size()));
         sortTerms(terms);
         
-     // Get indices to split data set
-        double avgAccuracy = 0;
+        // Initialize evaluation variables
+        avgAccuracy = 0.0;
+        double[] pooledInfoGivMatrix = new double[4]; // confusion matrix for class 0
+        double[] pooledInfoReqMatrix = new double[4]; // confusion matrix for class 1
+        double[] pooledFeatureReqMatrix = new double[4]; // confusion matrix for class 2
+        double[] pooledBugReqMatrix = new double[4]; // confusion matrix for class 3
+        
+        // Get indices to split data set
         for (int i = 0; i < 5; i++) {
         	ArrayList<Integer> indices = new ArrayList<Integer>(); 
         	for (int j = 0; j < myDocs.size(); j++) {
         		indices.add(j);
         	}
+        	
         	Collections.shuffle(indices);
         	System.out.println("First index is... " + indices.get(0));
         	
@@ -80,8 +95,14 @@ public class Parser {
                     .map(myLabels::get)
                     .collect(Collectors.toList());
             
-            // Naive Bayes, perform once
+            // Initialize tables to be filled for each run, then added to pooled tables
             double accuracy;
+            double[] infoGivMatrix = new double[4]; // confusion matrix for class 0
+            double[] infoReqMatrix = new double[4]; // confusion matrix for class 1
+            double[] featureReqMatrix = new double[4]; // confusion matrix for class 2
+            double[] bugReqMatrix = new double[4]; // confusion matrix for class 3
+            
+            // Naive Bayes without stopword removal, perform once 
             if (i == 0) {
             	System.out.println("\nWithout stopword removal:");
                 Classifier nbc = new Classifier(trainingDocs, trainingLabels);
@@ -93,15 +114,29 @@ public class Parser {
             System.out.println();
             vocabulary = new ArrayList<String>();
             termFreqs = new ArrayList<Integer>();
+            // Remove stopwords from training and test docs
             ArrayList<String> cleanedTrainingDocs = removeStopwords(trainingDocs, trainingLabels, "training");
             ArrayList<String> cleanedTestDocs = removeStopwords(testDocs, testLabels, "test");
             System.out.println("Training Docs: " + cleanedTrainingDocs.size() + " Labels: " + cleanedTrainingLabels.size());
+            // Classify test docs
             Classifier nbc2 = new Classifier(cleanedTrainingDocs, cleanedTrainingLabels);
             System.out.println("Test Docs: " + cleanedTestDocs.size() + " Labels: " + cleanedTestLabels.size());
             System.out.println("No.of tokens: " + vocabulary.size());
             accuracy = nbc2.classifyAll(cleanedTestDocs, cleanedTestLabels);
             System.out.println(String.format("Accuracy: %2.3f", accuracy));
             avgAccuracy += accuracy;
+            // Evaluate classification
+            nbc2.evaluate();
+            System.out.println("Macroaveraged precision: " + nbc2.macroPrecision);
+            System.out.println("Microaveraged precision: " + nbc2.microPrecision);
+            for (int j = 0; j < nbc2.numClasses; j++) {
+            	System.out.println("Precision of class " + j + ": " + nbc2.precisions[j]);
+            }
+            System.out.println("Macroaveraged recall: " + nbc2.macroRecall);
+            System.out.println("Microaveraged recall: " + nbc2.microRecall);
+            for (int j = 0; j < nbc2.numClasses; j++) {
+            	System.out.println("Recall of class " + j + ": " + nbc2.recalls[j]);
+            }
         }
         avgAccuracy = avgAccuracy/5.0;
         System.out.println("\nAverage accuracy: " + avgAccuracy);
