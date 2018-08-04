@@ -10,8 +10,8 @@ public class UserInterface {
     private JFrame frame;
     private JPanel gui;
     private JPanel buttonPanel;
+    private JScrollPane scrollDisplay;
     private JTextArea display;
-    
     private JButton b1;
     private JButton b2;
     private JButton b3;
@@ -31,7 +31,7 @@ public class UserInterface {
     public void addComponentsToFrame() {
         //add a panel to the frame
     	gui.add(buttonPanel, BorderLayout.NORTH);
-    	gui.add(display, BorderLayout.CENTER);
+    	gui.add(scrollDisplay, BorderLayout.CENTER);
     	frame.add(gui);
     	frame.pack();
     }
@@ -39,6 +39,7 @@ public class UserInterface {
     public void createDisplayPanel() {
     	display = new JTextArea(50, 50);
     	display.setEditable(false);
+    	scrollDisplay = new JScrollPane(display, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
     
     public void createFrame() {
@@ -134,7 +135,8 @@ public class UserInterface {
                 b3.setEnabled(false);
                 b4.setEnabled(true);
             }else if (e.getSource() == b4) {
-            	p.evaluate();
+            	String evaluation = p.evaluate();
+            	display.append(evaluation);
                 b4.setEnabled(false);
             }
     	}

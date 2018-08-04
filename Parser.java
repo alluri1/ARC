@@ -58,21 +58,27 @@ public class Parser {
         sortTerms(terms);
     }
     
-    public void evaluate() {
+    /** 
+     * Keep in mind that this only evaluates the LAST iteration of the cross validation in trainTest...
+     * don't have the time right now to average across each iteration, if that is what we do.. 
+     */
+    public String evaluate() {
     	nbc2.evaluate();
-        System.out.println("Macroaveraged precision: " + nbc2.macroPrecision);
-        System.out.println("Microaveraged precision: " + nbc2.microPrecision);
+    	
+    	// Prepare a string to display on JTextArea
+    	String matrixString = "Precision:\nMacroaveraged precision: " + nbc2.macroPrecision + "\n";
+    	matrixString += "Microaveraged precision: " + nbc2.microPrecision + "\n";
         for (int j = 0; j < nbc2.numClasses; j++) {
-        	System.out.println("Precision of class " + j + ": " + nbc2.precisions[j]);
+        	matrixString += "Precision of class " + j + ": " + nbc2.precisions[j] + "\n";
         }
-        System.out.println("Macroaveraged recall: " + nbc2.macroRecall);
-        System.out.println("Microaveraged recall: " + nbc2.microRecall);
+        matrixString += "\nRecall:\nMacroaveraged recall: " +  nbc2.macroRecall + "\n";
+        matrixString += "Microaveraged recall: " + nbc2.microRecall + "\n";
         for (int j = 0; j < nbc2.numClasses; j++) {
-        	System.out.println("Recall of class " + j + ": " + nbc2.recalls[j]);
+        	matrixString += "Recall of class " + j + ": " + nbc2.recalls[j] + "\n";
         }
         
-        avgAccuracy = (double)avgAccuracy/runs;
-        System.out.println("\nAverage accuracy: " + avgAccuracy);
+        matrixString += "\nAverage accuracy: " + avgAccuracy;
+        return matrixString;
     }
     
     public void trainTest() {
@@ -143,6 +149,7 @@ public class Parser {
             System.out.println(String.format("Accuracy: %2.3f", accuracy));
             avgAccuracy += accuracy;
         }
+        avgAccuracy = (double)avgAccuracy/runs;
     }
     
     public ArrayList<String> removeStopwords(ArrayList<String> docs, ArrayList<Integer> labels, String which) {
