@@ -7,26 +7,66 @@ import java.awt.event.ActionListener;
 
 public class UserInterface {
 
-    public JFrame frame;
-    private JPanel panel;
+    private JFrame frame;
+    private JPanel gui;
+    private JPanel buttonPanel;
+    private JTextArea display;
+    
     private JButton b1;
     private JButton b2;
     private JButton b3;
     private JButton b4;
-    private JButton b5;
-    private JButton b6;
+    
     Parser p;
 
-    public UserInterface(){
-        // create a frame of required dimensions
-        frame = new JFrame("NaiveBayes Classifier");
-        frame.setSize(800,600);
-
+    public UserInterface() {
+    	createFrame();
+    	createMainPanel();
+    	createButtonPanel();
+    	createDisplayPanel();
+        addComponentsToFrame();
+        frame.setVisible(true);
+    }
+    
+    public void addComponentsToFrame() {
         //add a panel to the frame
-        panel = new JPanel();
-        frame.getContentPane().add(panel);
-        panel.setLayout(new FlowLayout());
-
+    	gui.add(buttonPanel, BorderLayout.NORTH);
+    	gui.add(display, BorderLayout.CENTER);
+    	frame.add(gui);
+    	frame.pack();
+    }
+    
+    public void createDisplayPanel() {
+    	display = new JTextArea(50, 50);
+    	display.setEditable(false);
+    }
+    
+    public void createFrame() {
+    	// create a frame of required dimensions
+        frame = new JFrame("NaiveBayes Classifier");
+        
+        // Set the look and feel to the cross-platform look and feel,
+     	// otherwise mac os will have quirks like gaps between jbuttons
+     	try {
+     		UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+     	} catch (Exception e) {
+     		System.err.println("Unsupported look and feel.");
+     		e.printStackTrace();
+     	}
+     	
+     	frame.setSize(800,600);
+     	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+    
+    public void createMainPanel() {
+    	// Create the main panel which covers the entire frame
+    	// don't  put components directly onto jframe
+    	gui = new JPanel();
+    	gui.setLayout(new BorderLayout());
+    }
+    
+    public void createButtonPanel() {
+    	buttonPanel = new JPanel();
         // buttons for UI
         b1 = new JButton("Load data");
         b2 = new JButton("Explore data");
@@ -53,16 +93,13 @@ public class UserInterface {
         b2.addActionListener(new ButtonListener());
         b3.addActionListener(new ButtonListener());
         b4.addActionListener(new ButtonListener());
-
-        //b1.setLocation(100,100);
-        panel.add(b1);
-        panel.add(b2);
-        panel.add(b3);
-        panel.add(b4);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        buttonPanel.add(b1);
+        buttonPanel.add(b2);
+        buttonPanel.add(b3);
+        buttonPanel.add(b4);
     }
-
+    
     public static void main(String[] args) {
         new UserInterface();
     }
