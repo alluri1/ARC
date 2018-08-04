@@ -2931,7 +2931,7 @@ INSERT INTO `review` (`id`, `app_name`, `version`, `userid`, `date`, `rating`, `
 (2877, 'sketch_beta', '', 'I AM GILGAMESH Xamotinium (MrBoyFri3nd,InfiniteX)', '', 0, '', 'Does the normal app update to beta version or do we download it', 1, NULL, NULL, NULL, NULL),
 (2878, 'sketch_beta', '', 'Damo Conti', '', 0, '', 'Just a question, would it be possible to make layers? Because I sometimes mess up and want to erase part of the image and not whatevers under it?', 1, NULL, NULL, NULL, NULL),
 (2879, 'sketch_beta', '', 'terry feng', '', 0, '', 'Fericire', NULL, NULL, NULL, NULL, NULL),
-(2880, 'sketch_beta', '', 'ALEXANDRA BOBOC', '', 0, '', 'Frozen :-D', ,0 NULL, NULL, NULL, NULL),
+(2880, 'sketch_beta', '', 'ALEXANDRA BOBOC', '', 0, '', 'Frozen :-D', 0, NULL, NULL, NULL, NULL),
 (2881, 'sketch_beta', '', 'Krystian Horwat', '', 0, '', 'Me with my cat..before and after sketch?', 0, NULL, NULL, NULL, NULL),
 (2882, 'sketch_beta', '', 'FLaN LeFLaNi', '', 0, '', 'by Emily Paul', 0, NULL, NULL, NULL, NULL),
 (2883, 'sketch_beta', '', 'Carl Hammarlund', '', 0, '', '', NULL, NULL, NULL, NULL, NULL),
