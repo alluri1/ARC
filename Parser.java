@@ -28,14 +28,12 @@ public class Parser {
     ArrayList<Integer> cleanedTestLabels;
     ArrayList<Integer> trainingLabels;
     ArrayList<Integer> testLabels;
-    
+
     // Values to use in user interface
     // Will have main method in interface, create Parser object there
     double avgAccuracy; // overall accuracy
-    double avgInfoGivAccuracy; // overall info_giving class accuracy (class 0)
-    double avgInfoReqAccuracy; // overall info_request class accuracy (class 1)
-    double avgFeatureReqAccuracy; // overall feature_request class accuracy (class 2)
-    double avgBugRepAccuracy; // overall bug_report class accuracy (class 3)
+    Classifier nbc2;
+    int runs = 5;
 
     public Parser(){
     	data = new Data();
@@ -58,8 +56,27 @@ public class Parser {
         ArrayList<String> terms = tokenization(content);
         //System.out.println("No.of terms: "+ Integer.toString(terms.size()));
         sortTerms(terms);
+    }
+    
+    public void evaluate() {
+    	nbc2.evaluate();
+        System.out.println("Macroaveraged precision: " + nbc2.macroPrecision);
+        System.out.println("Microaveraged precision: " + nbc2.microPrecision);
+        for (int j = 0; j < nbc2.numClasses; j++) {
+        	System.out.println("Precision of class " + j + ": " + nbc2.precisions[j]);
+        }
+        System.out.println("Macroaveraged recall: " + nbc2.macroRecall);
+        System.out.println("Microaveraged recall: " + nbc2.microRecall);
+        for (int j = 0; j < nbc2.numClasses; j++) {
+        	System.out.println("Recall of class " + j + ": " + nbc2.recalls[j]);
+        }
         
-        // Initialize evaluation variables
+        avgAccuracy = (double)avgAccuracy/runs;
+        System.out.println("\nAverage accuracy: " + avgAccuracy);
+    }
+    
+    public void trainTest() {
+    	// Initialize evaluation variables
         avgAccuracy = 0.0;
         double[] pooledInfoGivMatrix = new double[4]; // confusion matrix for class 0
         double[] pooledInfoReqMatrix = new double[4]; // confusion matrix for class 1
@@ -67,7 +84,7 @@ public class Parser {
         double[] pooledBugReqMatrix = new double[4]; // confusion matrix for class 3
         
         // Get indices to split data set
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < runs; i++) {
         	ArrayList<Integer> indices = new ArrayList<Integer>(); 
         	for (int j = 0; j < myDocs.size(); j++) {
         		indices.add(j);
@@ -119,28 +136,13 @@ public class Parser {
             ArrayList<String> cleanedTestDocs = removeStopwords(testDocs, testLabels, "test");
             System.out.println("Training Docs: " + cleanedTrainingDocs.size() + " Labels: " + cleanedTrainingLabels.size());
             // Classify test docs
-            Classifier nbc2 = new Classifier(cleanedTrainingDocs, cleanedTrainingLabels);
+            nbc2 = new Classifier(cleanedTrainingDocs, cleanedTrainingLabels);
             System.out.println("Test Docs: " + cleanedTestDocs.size() + " Labels: " + cleanedTestLabels.size());
             System.out.println("No.of tokens: " + vocabulary.size());
             accuracy = nbc2.classifyAll(cleanedTestDocs, cleanedTestLabels);
             System.out.println(String.format("Accuracy: %2.3f", accuracy));
             avgAccuracy += accuracy;
-            // Evaluate classification
-            nbc2.evaluate();
-            System.out.println("Macroaveraged precision: " + nbc2.macroPrecision);
-            System.out.println("Microaveraged precision: " + nbc2.microPrecision);
-            for (int j = 0; j < nbc2.numClasses; j++) {
-            	System.out.println("Precision of class " + j + ": " + nbc2.precisions[j]);
-            }
-            System.out.println("Macroaveraged recall: " + nbc2.macroRecall);
-            System.out.println("Microaveraged recall: " + nbc2.microRecall);
-            for (int j = 0; j < nbc2.numClasses; j++) {
-            	System.out.println("Recall of class " + j + ": " + nbc2.recalls[j]);
-            }
         }
-        avgAccuracy = avgAccuracy/5.0;
-        System.out.println("\nAverage accuracy: " + avgAccuracy);
-        
     }
     
     public ArrayList<String> removeStopwords(ArrayList<String> docs, ArrayList<Integer> labels, String which) {
@@ -164,7 +166,7 @@ public class Parser {
         			review.add(token);
         		}
         	}
-        	// Don't add review/label if it is stripped of all words
+        	// Don't add review/label if it is empty
         	if (review.size() != 0) {
         		cleanedDocs.add(String.join(" ", review));
         		cleanedLabels.add(labels.get(i));
