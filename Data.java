@@ -22,6 +22,8 @@ public class Data {
 
     public static ArrayList<Row> dataRows = new ArrayList<Row>();
     public String content="";
+    
+    public String matrixString;
 
     public void init() {
         Connection conn = null;
@@ -80,85 +82,82 @@ public class Data {
      *
      */
     public void showSomeData() {
+    	matrixString = new String();
+    	
+    	
      // Show number of reviews
      int numOfReviews = 0;
        for (Row dataRow : dataRows) {
          numOfReviews++;
        }
-       System.out.println("Number of reviews: " + numOfReviews);
+       matrixString += "\nNumber of reviews: " + numOfReviews + "\n";
 
        // Show info distinct app names reviewed,
        // num of apps,
        // and how many reviews each app has
-       System.out.println("\nWhich apps are reviewed?");
+       matrixString += "\nApps that are reviewed: \n"; 
        HashMap<String, Integer> appReviewCount = new HashMap<String, Integer>();
        // Gather info for Sheep-O-block
        int infoGivsShp = 0;
        int infoSeeksShp = 0;
        int featRequestsShp = 0;
        int hasBugsShp = 0;
-       int sentScoresShp = 0;
        int empties = 0;
        int sheepDupes = 0;
+       int nonInformative = 0;
        ArrayList<String> sheeps = new ArrayList<String>();
        for (Row dataRow : dataRows) {
          String name = dataRow.getAppName();
          if (!appReviewCount.containsKey(name)) {
+        	 matrixString += name + "\n";
            appReviewCount.put(name, 1);
          } else {
            appReviewCount.put(name, appReviewCount.get(name) + 1);
          }
-
+         
          if (name.equals("Sheep-O-block")) {
-         String infoGiv = dataRow.getInfoGiv();
-         String infoSeek = dataRow.getInfoSeek();
-         String featRequest = dataRow.getFeatRequest();
-         String hasBug = dataRow.getHasBug();
-         int sentScore = Integer.parseInt(dataRow.getSentScore());
+        	 if (dataRow.getInfoGiv() == null) {
+        		 nonInformative++;
+        	 } else {
+            	switch (dataRow.getInfoGiv()) {
+         	 		case "0":
+         	 			infoGivsShp++;
+         	 		case "1":
+         	 			infoSeeksShp++;
+         	 		case "2":
+         	 			featRequestsShp++;
+         	 		case "3":
+         	 			hasBugsShp++;
+            	}
+        	 }
+
+         }
+        	 
          String text = dataRow.getText().trim();
          if (!sheeps.contains(text)) {
            sheeps.add(text);
          } else {
            sheepDupes++;
          }
-
-             if (infoGiv.equals("1")) {
-               infoGivsShp++;
-             }
-             if (infoSeek.equals("1")) {
-               infoSeeksShp++;
-             }
-             if (featRequest.equals("1")) {
-               featRequestsShp++;
-             }
-
-             // Count hasBug
-             if (hasBug.equals("1")) {
-               hasBugsShp++;
-             }
-
-             // Record sentiment
-             sentScoresShp += sentScore;
-
-
              if (text.equals("")) {
                empties++;
              }
 
-         }
+         
        }
        for (String appName : appReviewCount.keySet()) {
          System.out.println(appName + ": " + appReviewCount.get(appName));
        }
-
-       System.out.println("\n For Sheep-0-block...");
-       System.out.println("info giving: " + infoGivsShp);
-       System.out.println("info seeking: " + infoSeeksShp);
-       System.out.println("feature requests: " + featRequestsShp);
-       System.out.println("bug reports: " + hasBugsShp);
-       System.out.println("sentiment score: " + sentScoresShp);
-       System.out.println("empties: " + empties);
-       System.out.println("dupes: " + sheepDupes);
+       
+       matrixString += "\nFurther details about sample app, Sheep-O-block:\n";
+       matrixString += "Number of documents in info_giving class: " + infoGivsShp + "\n";
+       matrixString += "Number of documents in info_seeking class: " + infoSeeksShp + "\n";
+       matrixString += "Number of documents in feature_requests class: " + featRequestsShp + "\n";
+       matrixString += "Number of documents in bug_reports class: " + hasBugsShp + "\n";
+       matrixString += "Number of empty documents: " + empties + "\n";
+       matrixString += "Number of duplicate documents: " + sheepDupes + "\n";
+       matrixString += "Number of non-informative documents: " + nonInformative + "\n";
+  
 
        System.out.println("\nNum of apps reviewed: " + appReviewCount.size());
 

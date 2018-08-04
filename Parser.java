@@ -34,6 +34,10 @@ public class Parser {
     double avgAccuracy; // overall accuracy
     Classifier nbc2;
     int runs = 5;
+    public String termStr;
+    public int totalDocs;
+    public int eliminatedDocs;
+    public String dataExplorationStr;
 
     public Parser(){
     	data = new Data();
@@ -42,6 +46,8 @@ public class Parser {
         String content= data.content;
         myDocs = data.getDocs();
         myLabels = data.getLabels();
+        data.showSomeData();
+        dataExplorationStr = data.matrixString;
         //System.out.println(content);
         
         termList = new ArrayList<String>();
@@ -254,6 +260,8 @@ public class Parser {
     }
 
     public void sortTerms(ArrayList<String> terms) {
+    	termStr = new String();
+    	
         ArrayList<Node> listNode = new ArrayList<>();
 
         for (String term : terms){
@@ -267,10 +275,11 @@ public class Parser {
         for(int k=0; k<listNode.size(); k++){
             String s= (listNode.get(k)).word;
             Integer tf = ((listNode.get(k)).freq);
-            // System.out.println(s+"\t"+ Integer.toString(tf));
+            termStr += s + "\t" + Integer.toString(tf) + "\n";
         }
 
     }
+   
 
 
     public ArrayList<String> tokenization(String review){

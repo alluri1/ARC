@@ -122,21 +122,25 @@ public class UserInterface {
     		
     		if (whichButton == b1) {
     			// Load data
+    			display.append("Processing documents...\n");
     			p = new Parser();
+    			display.append("Documents loaded: " + p.myDocs.size() + "\n\n");
     			b1.setEnabled(false);
+    			b2.setEnabled(true);
     			b3.setEnabled(true);
     		} else if (e.getSource() == b2) {
-    			
-                b2.setEnabled(false);
-                
+    			display.append("\n\n#############   DATA EXPLORATION   #############\n");
+    			display.append(p.termStr);
+    			display.append(p.dataExplorationStr);
+    			b2.setEnabled(false);
             }else if (e.getSource() == b3) {
-            	
+            	display.append("\nRunning classifier...");
             	p.trainTest();
                 b3.setEnabled(false);
                 b4.setEnabled(true);
             }else if (e.getSource() == b4) {
             	String evaluation = p.evaluate();
-            	display.append(evaluation);
+            	display.append("\n\n#############   EVALUATION   #############\n\n" + evaluation);
                 b4.setEnabled(false);
             }
     	}
