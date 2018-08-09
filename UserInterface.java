@@ -16,6 +16,10 @@ public class UserInterface {
     private JButton b2;
     private JButton b3;
     private JButton b4;
+    private JButton b5;
+    private JLabel l1;
+    private JTextArea inputTextField;
+
     
     Parser p;
 
@@ -24,6 +28,7 @@ public class UserInterface {
     	createMainPanel();
     	createButtonPanel();
     	createDisplayPanel();
+    	createSubmitReviewPanel();
         addComponentsToFrame();
         frame.setVisible(true);
     }
@@ -33,8 +38,9 @@ public class UserInterface {
     	gui.add(buttonPanel, BorderLayout.NORTH);
     	gui.add(scrollDisplay, BorderLayout.CENTER);
     	frame.add(gui);
-    	frame.pack();
+    	//frame.pack();
     }
+
     
     public void createDisplayPanel() {
     	display = new JTextArea(50, 50);
@@ -55,7 +61,7 @@ public class UserInterface {
      		e.printStackTrace();
      	}
      	
-     	frame.setSize(800,600);
+     	frame.setSize(800,300);
      	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
@@ -65,7 +71,31 @@ public class UserInterface {
     	gui = new JPanel();
     	gui.setLayout(new BorderLayout());
     }
-    
+
+
+    public void createSubmitReviewPanel(){
+
+        // label for textField
+
+
+        // text field to enter the review
+        inputTextField = new JTextArea(4,30);
+        //inputTextField.setColumns(20);
+        inputTextField.setLocation(400,400);
+        inputTextField.setEnabled(true);
+        inputTextField.setVisible(true);
+        buttonPanel.add(inputTextField);
+
+        //submit button
+        b5 = new JButton("Submit");
+        b5.setVisible(true);
+        b5.setEnabled(true);
+        b5.setLocation(400,400);
+        b5.addActionListener(new ButtonListener());
+        buttonPanel.add(b5);
+
+    }
+
     public void createButtonPanel() {
     	buttonPanel = new JPanel();
         // buttons for UI
@@ -88,17 +118,18 @@ public class UserInterface {
         b2.setVisible(true);
         b3.setVisible(true);
         b4.setVisible(true);
-        
+
         // Add action listener
         b1.addActionListener(new ButtonListener());
         b2.addActionListener(new ButtonListener());
         b3.addActionListener(new ButtonListener());
         b4.addActionListener(new ButtonListener());
-        
+
         buttonPanel.add(b1);
         buttonPanel.add(b2);
         buttonPanel.add(b3);
         buttonPanel.add(b4);
+
     }
     
     public static void main(String[] args) {
@@ -142,6 +173,13 @@ public class UserInterface {
             	String evaluation = p.evaluate();
             	display.append("\n\n#############   EVALUATION   #############\n\n" + evaluation);
                 b4.setEnabled(false);
+            }else if (e.getSource()== b5){
+                String str = inputTextField.getText();
+                //Make sure the new text is visible, even if there
+                //was a selection in the text area.
+                inputTextField.setCaretPosition(inputTextField.getDocument().getLength());
+                System.out.println(str);
+
             }
     	}
     }

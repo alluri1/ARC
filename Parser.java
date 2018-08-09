@@ -317,7 +317,7 @@ public class Parser {
 
 
     public static void main(String[] args) {
-    	Parser p = new Parser(); 
+    	Parser p = new Parser();
     }
 
 }
