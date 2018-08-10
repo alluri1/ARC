@@ -224,7 +224,7 @@ public class Classifier {
 	}
 	
 	/**
-	 * 
+	 * Evaluates classifier.
 	 */
 	public void evaluate() {
 		generateConfusionMatrix();

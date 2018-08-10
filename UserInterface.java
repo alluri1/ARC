@@ -13,13 +13,19 @@ public class UserInterface {
     private JPanel reviewSubmitPanel;
     private JScrollPane scrollDisplay;
     private JTextArea display;
-    private JButton b1;
     private JButton b2;
     private JButton b3;
     private JButton b4;
     private JButton b5;
+    private JButton exploreClass0;
+    private JButton exploreClass1;
+    private JButton exploreClass2;
+    private JButton exploreClass3;
     private JLabel l1;
     private JTextArea inputTextField;
+    private JTextArea inputTextArea;
+    private JPanel displayPanel;
+    private JTextArea display2;
     
     Parser p;
 
@@ -28,6 +34,7 @@ public class UserInterface {
     	createMainPanel();
     	createButtonPanel();
     	createDisplayPanel();
+    	 createDisplayPanel2();
     	createSubmitReviewPanel();
         addComponentsToFrame();
         frame.setVisible(true);
@@ -61,7 +68,7 @@ public class UserInterface {
      		e.printStackTrace();
      	}
      	
-     	frame.setSize(800,500);
+     	frame.setSize(1000,600);
      	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
      	frame.setResizable(false);
     }
@@ -72,7 +79,14 @@ public class UserInterface {
     	gui = new JPanel();
     	gui.setLayout(new BorderLayout());
     }
-
+    
+    public void createDisplayPanel2() {
+        displayPanel= new JPanel();
+        display2 = new JTextArea(2,100);
+        display2.setEditable(false);
+        display2.setBackground(frame.getBackground());
+        displayPanel.add(display2);
+    }
 
     public void createSubmitReviewPanel(){
     	reviewSubmitPanel = new JPanel();
@@ -82,61 +96,58 @@ public class UserInterface {
     	l1 = new JLabel("Enter review to classify:");
 
         // text field to enter the review
-        inputTextField = new JTextArea(4,30);
+    	inputTextArea = new JTextArea(4,30);
         //inputTextField.setColumns(20);
-        inputTextField.setLocation(400,400);
-        inputTextField.setEnabled(true);
-        inputTextField.setVisible(true);
-        buttonPanel.add(inputTextField);
+    	inputTextArea.setEnabled(true);
+    	inputTextArea.setVisible(true);
+        buttonPanel.add(inputTextArea);
 
         //submit button
-        b5 = new JButton("Submit");
-        b5.setVisible(true);
-        b5.setEnabled(false);
+        b5 = new JButton("Classify");
         b5.addActionListener(new ButtonListener());
+        
         reviewSubmitPanel.add(l1, BorderLayout.NORTH);
-        reviewSubmitPanel.add(inputTextField, BorderLayout.CENTER);
         reviewSubmitPanel.add(b5, BorderLayout.EAST);
+        reviewSubmitPanel.add(inputTextArea, BorderLayout.CENTER); ///////
+        reviewSubmitPanel.add(displayPanel, BorderLayout.SOUTH); /////
     }
 
     public void createButtonPanel() {
     	buttonPanel = new JPanel();
+    	buttonPanel.setLayout(new GridLayout(2, 4, 2, 2));
+    	
         // buttons for UI
-        b1 = new JButton("Load data");
-        b2 = new JButton("Explore data");
+        b2 = new JButton("Explore all reviews");
         b3 = new JButton("Run classifier");
         b4 = new JButton("Evaluate classifier");
+        exploreClass0 = new JButton("Explore has_information_giving");
+        exploreClass1 = new JButton("Explore has_information_seeking");
+        exploreClass2 = new JButton("Explore has_feature_request");
+        exploreClass3 = new JButton("Explore has_bug_report");
 
-        b1.setLocation(100,100);
-        b2.setLocation(200,200);
-        b3.setLocation(300,300);
-        b4.setLocation(400,300);
-
-       	b1.setEnabled(true);
-       	b2.setEnabled(false);
-       	b3.setEnabled(false);
-       	b4.setEnabled(false);
-
-        b1.setVisible(true);
-        b2.setVisible(true);
-        b3.setVisible(true);
-        b4.setVisible(true);
-
-        // Add action listener
-        b1.addActionListener(new ButtonListener());
+        // Add action listeners
         b2.addActionListener(new ButtonListener());
         b3.addActionListener(new ButtonListener());
         b4.addActionListener(new ButtonListener());
-
-        buttonPanel.add(b1);
+        exploreClass0.addActionListener(new ButtonListener());
+        exploreClass1.addActionListener(new ButtonListener());
+        exploreClass2.addActionListener(new ButtonListener());
+        exploreClass3.addActionListener(new ButtonListener());
+        
         buttonPanel.add(b2);
         buttonPanel.add(b3);
         buttonPanel.add(b4);
-
+        buttonPanel.add(new JLabel()); // dummy space
+        buttonPanel.add(exploreClass0);
+        buttonPanel.add(exploreClass1);
+        buttonPanel.add(exploreClass2);
+        buttonPanel.add(exploreClass3);
     }
     
     public static void main(String[] args) {
-        new UserInterface();
+        UserInterface ui = new UserInterface();
+        ui.p = new Parser();
+        // disable buttons until parser finishes
     }
     
     /**
@@ -151,39 +162,37 @@ public class UserInterface {
     	 */
     	public void actionPerformed(ActionEvent e) {
     		String input = e.getActionCommand();
-    		Object whichButton = e.getSource();
     		System.out.println("Just pressed: " + input);
     		
-    		if (whichButton == b1) {
-    			// Load data
-    			display.append("Processing documents...\n");
-    			p = new Parser();
-    			display.append("Documents loaded: " + p.myDocs.size() + "\n\n");
-    			b1.setEnabled(false);
-    			b2.setEnabled(true);
-    			b3.setEnabled(true);
-    			b5.setEnabled(true);
-    		} else if (e.getSource() == b2) {
-    			display.append("\n\n#############   DATA EXPLORATION   #############\n");
+    		if (e.getSource() == b2) {
+    			display.setText("\n\n#############   DATA EXPLORATION   #############\n");
     			display.append(p.termStr);
     			display.append(p.dataExplorationStr);
-    			b2.setEnabled(false);
             }else if (e.getSource() == b3) {
-            	display.append("\nRunning classifier...");
+            	display.setText("\nRunning classifier on sample 80% train/20% test set...");
             	p.trainTest();
-                b3.setEnabled(false);
-                b4.setEnabled(true);
             }else if (e.getSource() == b4) {
             	String evaluation = p.evaluate();
             	display.append("\n\n#############   EVALUATION   #############\n\n" + evaluation);
-                b4.setEnabled(false);
             }else if (e.getSource()== b5){
-                String str = inputTextField.getText();
+                String str = inputTextArea.getText();
                 //Make sure the new text is visible, even if there
                 //was a selection in the text area.
-                inputTextField.setCaretPosition(inputTextField.getDocument().getLength());
+                inputTextArea.setCaretPosition(inputTextArea.getDocument().getLength());
+                display2.append("Class of the given review is: ");
                 System.out.println(str);
-
+            } else if (e.getSource() == exploreClass0) {
+            	display.setText("\n\n############# HAS_INFORMATION_GIVING REVIEWS #############\n");
+            	display.append(p.class0Reviews);
+            } else if (e.getSource() == exploreClass1) {
+            	display.setText("\n\n############# HAS_INFORMATION_SEEKING REVIEWS #############\n");
+            	display.append(p.class1Reviews);
+            } else if (e.getSource() == exploreClass2) {
+            	display.setText("\n\n############# HAS_FEATURE_REQUEST REVIEWS #############\n");
+            	display.append(p.class2Reviews);
+            } else if (e.getSource() == exploreClass3) {
+            	display.setText("\n\n############# HAS_BUG_REPORT REVIEWS #############\n");
+            	display.append(p.class3Reviews);
             }
     	}
     }

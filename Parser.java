@@ -12,8 +12,10 @@ import java.util.stream.IntStream;
 
 public class Parser {
     
+	// Uncleaned documents/labels
     public ArrayList<String> myDocs;
     public ArrayList<Integer> myLabels;
+    
     public ArrayList<String> termList;
     private static String[] stopList ;
     public static ArrayList<Integer> termFrequency;
@@ -30,7 +32,6 @@ public class Parser {
     ArrayList<Integer> testLabels;
 
     // Values to use in user interface
-    // Will have main method in interface, create Parser object there
     double avgAccuracy; // overall accuracy
     Classifier nbc2;
     int runs = 5;
@@ -38,6 +39,11 @@ public class Parser {
     public int totalDocs;
     public int eliminatedDocs;
     public String dataExplorationStr;
+    
+    public String class0Reviews;
+    public String class1Reviews;
+    public String class2Reviews;
+    public String class3Reviews;
 
     public Parser(){
     	data = new Data();
@@ -62,11 +68,37 @@ public class Parser {
         ArrayList<String> terms = tokenization(content);
         //System.out.println("No.of terms: "+ Integer.toString(terms.size()));
         sortTerms(terms);
+        
+        sortReviewsIntoClasses();
+    }
+    
+    /**
+     * Sorts all loaded reviews into classes,
+     * represented by strings that are easy to print.
+     */
+    public void sortReviewsIntoClasses() {
+    	class0Reviews = new String();
+    	class1Reviews = new String();
+    	class2Reviews = new String();
+    	class3Reviews = new String();
+    	
+    	for (int i = 0; i < myDocs.size(); i++) {
+    		switch (myLabels.get(i)) {
+    			case 0:
+    				class0Reviews += myDocs.get(i) + "\n\n";
+    				break;
+    			case 1:
+    				class1Reviews += myDocs.get(i) + "\n\n";
+    			case 2:
+    				class2Reviews += myDocs.get(i) + "\n\n";
+    			case 3:
+    				class3Reviews += myDocs.get(i) + "\n\n";
+    		}
+    	}
     }
     
     /** 
      * Keep in mind that this only evaluates the LAST iteration of the cross validation in trainTest...
-     * don't have the time right now to average across each iteration, if that is what we do.. 
      */
     public String evaluate() {
     	nbc2.evaluate();
