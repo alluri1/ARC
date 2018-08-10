@@ -10,6 +10,7 @@ public class UserInterface {
     private JFrame frame;
     private JPanel gui;
     private JPanel buttonPanel;
+    private JPanel reviewSubmitPanel;
     private JScrollPane scrollDisplay;
     private JTextArea display;
     private JButton b1;
@@ -19,7 +20,6 @@ public class UserInterface {
     private JButton b5;
     private JLabel l1;
     private JTextArea inputTextField;
-
     
     Parser p;
 
@@ -37,10 +37,10 @@ public class UserInterface {
         //add a panel to the frame
     	gui.add(buttonPanel, BorderLayout.NORTH);
     	gui.add(scrollDisplay, BorderLayout.CENTER);
+    	gui.add(reviewSubmitPanel, BorderLayout.SOUTH);
     	frame.add(gui);
     	//frame.pack();
     }
-
     
     public void createDisplayPanel() {
     	display = new JTextArea(50, 50);
@@ -61,8 +61,9 @@ public class UserInterface {
      		e.printStackTrace();
      	}
      	
-     	frame.setSize(800,300);
+     	frame.setSize(800,500);
      	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+     	frame.setResizable(false);
     }
     
     public void createMainPanel() {
@@ -74,9 +75,11 @@ public class UserInterface {
 
 
     public void createSubmitReviewPanel(){
-
+    	reviewSubmitPanel = new JPanel();
+    	reviewSubmitPanel.setLayout(new BorderLayout());
+    	
         // label for textField
-
+    	l1 = new JLabel("Enter review to classify:");
 
         // text field to enter the review
         inputTextField = new JTextArea(4,30);
@@ -89,11 +92,11 @@ public class UserInterface {
         //submit button
         b5 = new JButton("Submit");
         b5.setVisible(true);
-        b5.setEnabled(true);
-        b5.setLocation(400,400);
+        b5.setEnabled(false);
         b5.addActionListener(new ButtonListener());
-        buttonPanel.add(b5);
-
+        reviewSubmitPanel.add(l1, BorderLayout.NORTH);
+        reviewSubmitPanel.add(inputTextField, BorderLayout.CENTER);
+        reviewSubmitPanel.add(b5, BorderLayout.EAST);
     }
 
     public void createButtonPanel() {
@@ -159,6 +162,7 @@ public class UserInterface {
     			b1.setEnabled(false);
     			b2.setEnabled(true);
     			b3.setEnabled(true);
+    			b5.setEnabled(true);
     		} else if (e.getSource() == b2) {
     			display.append("\n\n#############   DATA EXPLORATION   #############\n");
     			display.append(p.termStr);
