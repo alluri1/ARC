@@ -89,12 +89,49 @@ public class Parser {
     				break;
     			case 1:
     				class1Reviews += myDocs.get(i) + "\n\n";
+    				break;
     			case 2:
     				class2Reviews += myDocs.get(i) + "\n\n";
+    				break;
     			case 3:
     				class3Reviews += myDocs.get(i) + "\n\n";
+    				break;
     		}
     	}
+    }
+    
+    public String classifyReview(String review) {
+    	int label;
+    	String reviewClass = new String();
+    	
+    	// Clean both training docs & review
+        ArrayList<String> cleanedTrainingDocs = removeStopwords(myDocs, myLabels, "training");
+        ArrayList<String> reviewList = new ArrayList<String>();
+        reviewList.add(review);
+        ArrayList<String> cleanedTestDocs = removeStopwords(reviewList, null, "test");
+    	
+    	Classifier nbc = new Classifier(cleanedTrainingDocs, cleanedTrainingLabels);
+    	label = nbc.classify(cleanedTestDocs.get(0));
+    	
+    	System.out.println(reviewClass);
+    	
+    	switch (label) {
+    		case 0:
+    			reviewClass = "has_information_giving";
+    			break;
+   			case 1:
+   				reviewClass = "has_information_seeking";
+   				break;
+   			case 2:
+   				reviewClass = "has_feature_request";
+   				break;
+   			case 3:
+   				reviewClass = "has_bug_report";
+   				break;
+    		
+    	}
+    	
+        return reviewClass;
     }
     
     /** 
@@ -214,15 +251,20 @@ public class Parser {
         	// Don't add review/label if it is empty
         	if (review.size() != 0) {
         		cleanedDocs.add(String.join(" ", review));
-        		cleanedLabels.add(labels.get(i));
+        		if (labels != null) {
+        			cleanedLabels.add(labels.get(i));
+        		}
+        		
         	}
         }
     	
-    	if (which.equals("training")) {
-    		cleanedTrainingLabels = cleanedLabels;
-		} else if (which.equals("test")) {
-			cleanedTestLabels = cleanedLabels;
-		}
+    	if (labels != null) {
+    		if (which.equals("training")) {
+        		cleanedTrainingLabels = cleanedLabels;
+    		} else if (which.equals("test")) {
+    			cleanedTestLabels = cleanedLabels;
+    		}
+    	}
     	
     	return cleanedDocs;
     }

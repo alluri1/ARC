@@ -16,7 +16,7 @@ public class Classifier {
 	ArrayList<Integer> trainingLabels; // numbers for the convenience of implementation, e.g. 0 and 1
 	ArrayList<Integer> testLabels;
 	ArrayList<String> testDocs;
-	ArrayList<Integer> classifiedLabels;
+	public ArrayList<Integer> classifiedLabels;
 	int numClasses; 
 	int[] classCounts; // number of docs per class, will be used for computing the probability of each class
 	String[] classStrings; // concatenated string for a given class, a big document that includes all documents from that class, helps us compute the class conditional probability of each term in this class

@@ -49,9 +49,21 @@ public class UserInterface {
     	//frame.pack();
     }
     
+    public void enableButtons() {
+        b2.setEnabled(true);
+        b3.setEnabled(true);
+        b4.setEnabled(true);
+        exploreClass0.setEnabled(true);
+        exploreClass1.setEnabled(true);
+        exploreClass2.setEnabled(true);
+        exploreClass3.setEnabled(true);
+    }
+    
     public void createDisplayPanel() {
     	display = new JTextArea(50, 50);
     	display.setEditable(false);
+    	display.setLineWrap(true);
+    	display.setWrapStyleWord(true);
     	scrollDisplay = new JScrollPane(display, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
     
@@ -82,7 +94,7 @@ public class UserInterface {
     
     public void createDisplayPanel2() {
         displayPanel= new JPanel();
-        display2 = new JTextArea(2,100);
+        display2 = new JTextArea(2,50);
         display2.setEditable(false);
         display2.setBackground(frame.getBackground());
         displayPanel.add(display2);
@@ -100,10 +112,13 @@ public class UserInterface {
         //inputTextField.setColumns(20);
     	inputTextArea.setEnabled(true);
     	inputTextArea.setVisible(true);
+    	inputTextArea.setLineWrap(true);
+    	inputTextArea.setWrapStyleWord(true);
         buttonPanel.add(inputTextArea);
 
         //submit button
         b5 = new JButton("Classify");
+        b5.setEnabled(false);
         b5.addActionListener(new ButtonListener());
         
         reviewSubmitPanel.add(l1, BorderLayout.NORTH);
@@ -118,12 +133,21 @@ public class UserInterface {
     	
         // buttons for UI
         b2 = new JButton("Explore all reviews");
-        b3 = new JButton("Run classifier");
+        b3 = new JButton("Train classifier");
         b4 = new JButton("Evaluate classifier");
         exploreClass0 = new JButton("Explore has_information_giving");
         exploreClass1 = new JButton("Explore has_information_seeking");
         exploreClass2 = new JButton("Explore has_feature_request");
         exploreClass3 = new JButton("Explore has_bug_report");
+        
+        // Disable (until parser finishes, then enableButtons is called)
+        b2.setEnabled(false);
+        b3.setEnabled(false);
+        b4.setEnabled(false);
+        exploreClass0.setEnabled(false);
+        exploreClass1.setEnabled(false);
+        exploreClass2.setEnabled(false);
+        exploreClass3.setEnabled(false);
 
         // Add action listeners
         b2.addActionListener(new ButtonListener());
@@ -147,7 +171,7 @@ public class UserInterface {
     public static void main(String[] args) {
         UserInterface ui = new UserInterface();
         ui.p = new Parser();
-        // disable buttons until parser finishes
+        ui.enableButtons();
     }
     
     /**
@@ -171,27 +195,31 @@ public class UserInterface {
             }else if (e.getSource() == b3) {
             	display.setText("\nRunning classifier on sample 80% train/20% test set...");
             	p.trainTest();
+            	b5.setEnabled(true);
             }else if (e.getSource() == b4) {
             	String evaluation = p.evaluate();
-            	display.append("\n\n#############   EVALUATION   #############\n\n" + evaluation);
+            	display.append("#############   EVALUATION   #############\n\n" + evaluation);
             }else if (e.getSource()== b5){
-                String str = inputTextArea.getText();
+            	display2.setText("");
+                String review = inputTextArea.getText();
                 //Make sure the new text is visible, even if there
                 //was a selection in the text area.
                 inputTextArea.setCaretPosition(inputTextArea.getDocument().getLength());
-                display2.append("Class of the given review is: ");
-                System.out.println(str);
+                display2.setText("Class of the given review is: ");
+                System.out.println(review);
+                String reviewClass = p.classifyReview(review);
+                display2.append(reviewClass);
             } else if (e.getSource() == exploreClass0) {
-            	display.setText("\n\n############# HAS_INFORMATION_GIVING REVIEWS #############\n");
+            	display.setText("############# HAS_INFORMATION_GIVING REVIEWS #############\n");
             	display.append(p.class0Reviews);
             } else if (e.getSource() == exploreClass1) {
-            	display.setText("\n\n############# HAS_INFORMATION_SEEKING REVIEWS #############\n");
+            	display.setText("############# HAS_INFORMATION_SEEKING REVIEWS #############\n");
             	display.append(p.class1Reviews);
             } else if (e.getSource() == exploreClass2) {
-            	display.setText("\n\n############# HAS_FEATURE_REQUEST REVIEWS #############\n");
+            	display.setText("############# HAS_FEATURE_REQUEST REVIEWS #############\n");
             	display.append(p.class2Reviews);
             } else if (e.getSource() == exploreClass3) {
-            	display.setText("\n\n############# HAS_BUG_REPORT REVIEWS #############\n");
+            	display.setText("############# HAS_BUG_REPORT REVIEWS #############\n");
             	display.append(p.class3Reviews);
             }
     	}
