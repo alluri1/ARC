@@ -235,8 +235,11 @@ public class Parser {
         	ArrayList<String> review = new ArrayList<String>();
         	String[] tokens = docs.get(i).split("[ .,&%$#!/+()-*^?:\"--]+");
         	for (String token : tokens) {
-        		// If new term & not a stopword
-        		if (!vocabulary.contains(token) && searchStopword(token) == -1) {
+        		// If new term & not a stopword && does not contain number
+        		System.out.println(token.matches("\\b[(a-z)|(A-Z)]*\\b"));
+        		if (!vocabulary.contains(token) && searchStopword(token) == -1 && token.matches("\\b[(a-z)|(A-Z)]*\\b")) {
+        			System.out.println("adding..." + token);
+        			
         			review.add(token); // keep in review
         			vocabulary.add(token);
         			termFreqs.add(1);
@@ -369,7 +372,9 @@ public class Parser {
             if (searchStopword(token) == -1 && token.length()!=1){
                 token = stemming(token);
                 //System.out.println("token: "+token);
-                if (!termList.contains(token)) {//a new term
+
+        		// If new token, not a stopword, and does not contain number,
+                if (!termList.contains(token) && searchStopword(token) == -1 && token.matches("\\b[(a-z)|(A-Z)]*\\b")) {
                     termList.add(token);
                     termFrequency.add(1);
                     /*
@@ -378,7 +383,7 @@ public class Parser {
                     //docLists.add(docList);
                     */
 
-                } else {//an existing term
+                } else if (termList.contains(token)){//an existing term
                     int index = termList.indexOf(token);
                     int tf = termFrequency.get(index);
                     tf++;

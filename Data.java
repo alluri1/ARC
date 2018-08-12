@@ -109,8 +109,7 @@ public class Data {
        for (Row dataRow : dataRows) {
          String name = dataRow.getAppName();
          if (!appReviewCount.containsKey(name)) {
-        	 matrixString += name + "\n";
-           appReviewCount.put(name, 1);
+        	 appReviewCount.put(name, 1);
          } else {
            appReviewCount.put(name, appReviewCount.get(name) + 1);
          }
@@ -130,7 +129,6 @@ public class Data {
          	 			hasBugsShp++;
             	}
         	 }
-
          }
         	 
          String text = dataRow.getText().trim();
@@ -142,10 +140,9 @@ public class Data {
              if (text.equals("")) {
                empties++;
              }
-
-         
        }
        for (String appName : appReviewCount.keySet()) {
+      	 matrixString += appName + ": " + appReviewCount.get(appName) + "\n";
          System.out.println(appName + ": " + appReviewCount.get(appName));
        }
        
