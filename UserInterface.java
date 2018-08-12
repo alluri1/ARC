@@ -64,6 +64,19 @@ public class UserInterface {
     	display.setEditable(false);
     	display.setLineWrap(true);
     	display.setWrapStyleWord(true);
+    	// Set initial welcome message
+    	String welcome = "Welcome to the App Review Classifier (ARC)\n" +
+    			"Authors: Brienna Herold, Mounika Alluri\n\n" +
+    			"With the ARC system, you can do the following:" +
+    			"\n• Explore preloaded reviews as a whole or by following classes:" +
+    			"\n\t• has_information_giving: Give developers information about a specific aspect of the app" +
+    			"\n\t• has_information_seeking: Attempt to get information or help from developers and/or other users" +
+    			"\n\t• has_feature_request: Contain ideas, suggestions, or needs for improving the app" +
+    			"\n\t• has_bug_report: Reports technical issues or unexpected behavior" +
+    			"\n• Train a Naive Bayes classifier on preloaded reviews" +
+    			"\n• Evaluate the trained classifier" +
+    			"\n• Submit your own review to classify";
+    	display.setText(welcome);
     	scrollDisplay = new JScrollPane(display, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
     
@@ -123,8 +136,8 @@ public class UserInterface {
         
         reviewSubmitPanel.add(l1, BorderLayout.NORTH);
         reviewSubmitPanel.add(b5, BorderLayout.EAST);
-        reviewSubmitPanel.add(inputTextArea, BorderLayout.CENTER); ///////
-        reviewSubmitPanel.add(displayPanel, BorderLayout.SOUTH); /////
+        reviewSubmitPanel.add(inputTextArea, BorderLayout.CENTER); 
+        reviewSubmitPanel.add(displayPanel, BorderLayout.SOUTH); 
     }
 
     public void createButtonPanel() {
