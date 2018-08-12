@@ -144,12 +144,42 @@ public class Parser {
     	String matrixString = "Precision:\nMacroaveraged precision: " + nbc2.macroPrecision + "\n";
     	matrixString += "Microaveraged precision: " + nbc2.microPrecision + "\n";
         for (int j = 0; j < nbc2.numClasses; j++) {
-        	matrixString += "Precision of class " + j + ": " + nbc2.precisions[j] + "\n";
+        	String className = new String();
+        	switch (j) {
+        		case 0:
+        			className = "has_information_giving";
+        			break;
+        		case 1:
+        			className = "has_information_seeking";
+        			break;
+        		case 2:
+        			className = "has_feature_request";
+        			break;
+        		case 3:
+        			className = "has_bug_report";
+        			break;
+        	}
+        	matrixString += "Precision of " + className + ": " + nbc2.precisions[j] + "\n";
         }
         matrixString += "\nRecall:\nMacroaveraged recall: " +  nbc2.macroRecall + "\n";
         matrixString += "Microaveraged recall: " + nbc2.microRecall + "\n";
         for (int j = 0; j < nbc2.numClasses; j++) {
-        	matrixString += "Recall of class " + j + ": " + nbc2.recalls[j] + "\n";
+        	String className = new String();
+        	switch (j) {
+    			case 0:
+    				className = "has_information_giving";
+    				break;
+    			case 1:
+    				className = "has_information_seeking";
+    				break;
+    			case 2:
+    				className = "has_feature_request";
+    				break;
+    			case 3:
+    				className = "has_bug_report";
+    				break;
+        	}
+        	matrixString += "Recall of " + className + ": " + nbc2.recalls[j] + "\n";
         }
         
         matrixString += "\nAverage accuracy: " + avgAccuracy;
@@ -236,10 +266,7 @@ public class Parser {
         	String[] tokens = docs.get(i).split("[ .,&%$#!/+()-*^?:\"--]+");
         	for (String token : tokens) {
         		// If new term & not a stopword && does not contain number
-        		System.out.println(token.matches("\\b[(a-z)|(A-Z)]*\\b"));
-        		if (!vocabulary.contains(token) && searchStopword(token) == -1 && token.matches("\\b[(a-z)|(A-Z)]*\\b")) {
-        			System.out.println("adding..." + token);
-        			
+        		if (!vocabulary.contains(token) && searchStopword(token) == -1 && token.matches("\\b[(a-z)|(A-Z)]*\\b")) {        			
         			review.add(token); // keep in review
         			vocabulary.add(token);
         			termFreqs.add(1);

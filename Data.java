@@ -89,138 +89,80 @@ public class Data {
      int numOfReviews = 0;
        for (Row dataRow : dataRows) {
          numOfReviews++;
+         
        }
        matrixString += "\nNumber of reviews: " + numOfReviews + "\n";
 
        // Show info distinct app names reviewed,
        // num of apps,
        // and how many reviews each app has
-       matrixString += "\nApps that are reviewed: \n"; 
        HashMap<String, Integer> appReviewCount = new HashMap<String, Integer>();
+       ArrayList<String> reviews = new ArrayList<String>();
        // Gather info for Sheep-O-block
-       int infoGivsShp = 0;
-       int infoSeeksShp = 0;
-       int featRequestsShp = 0;
-       int hasBugsShp = 0;
+       int infoGivs = 0;
+       int infoSeeks = 0;
+       int featRequests = 0;
+       int hasBugs = 0;
        int empties = 0;
        int sheepDupes = 0;
        int nonInformative = 0;
-       ArrayList<String> sheeps = new ArrayList<String>();
+       
        for (Row dataRow : dataRows) {
          String name = dataRow.getAppName();
-         if (!appReviewCount.containsKey(name)) {
-        	 appReviewCount.put(name, 1);
-         } else {
-           appReviewCount.put(name, appReviewCount.get(name) + 1);
+         if (dataRow.getInfoGiv() != null) {
+             if (!appReviewCount.containsKey(name)) {
+            	 appReviewCount.put(name, 1);
+             } else {
+               appReviewCount.put(name, appReviewCount.get(name) + 1);
+             }
          }
+
          
-         if (name.equals("Sheep-O-block")) {
         	 if (dataRow.getInfoGiv() == null) {
         		 nonInformative++;
         	 } else {
             	switch (dataRow.getInfoGiv()) {
          	 		case "0":
-         	 			infoGivsShp++;
+         	 			infoGivs++;
+         	 			break;
          	 		case "1":
-         	 			infoSeeksShp++;
+         	 			infoSeeks++;
+         	 			break;
          	 		case "2":
-         	 			featRequestsShp++;
+         	 			featRequests++;
+         	 			break;
          	 		case "3":
-         	 			hasBugsShp++;
+         	 			hasBugs++;
+         	 			break;
             	}
         	 }
-         }
         	 
          String text = dataRow.getText().trim();
-         if (!sheeps.contains(text)) {
-           sheeps.add(text);
+         if (!reviews.contains(text)) {
+           reviews.add(text);
          } else {
            sheepDupes++;
          }
-             if (text.equals("")) {
+           if (text.equals("")) {
                empties++;
              }
        }
-       for (String appName : appReviewCount.keySet()) {
-      	 matrixString += appName + ": " + appReviewCount.get(appName) + "\n";
-         System.out.println(appName + ": " + appReviewCount.get(appName));
-       }
        
-       matrixString += "\nFurther details about sample app, Sheep-O-block:\n";
-       matrixString += "Number of documents in info_giving class: " + infoGivsShp + "\n";
-       matrixString += "Number of documents in info_seeking class: " + infoSeeksShp + "\n";
-       matrixString += "Number of documents in feature_requests class: " + featRequestsShp + "\n";
-       matrixString += "Number of documents in bug_reports class: " + hasBugsShp + "\n";
-       matrixString += "Number of empty documents: " + empties + "\n";
-       matrixString += "Number of duplicate documents: " + sheepDupes + "\n";
+       matrixString += "\nNumber of documents in info_giving class: " + infoGivs + "\n";
+       matrixString += "Number of documents in info_seeking class: " + infoSeeks + "\n";
+       matrixString += "Number of documents in feature_requests class: " + featRequests + "\n";
+       matrixString += "Number of documents in bug_reports class: " + hasBugs + "\n";
        matrixString += "Number of non-informative documents: " + nonInformative + "\n";
-  
-
-       System.out.println("\nNum of apps reviewed: " + appReviewCount.size());
-
-       // Count number of labelled data
-       int labelled = 0;
-       int infoGivs = 0;
-       int infoSeeks = 0;
-       int featRequests = 0;
-       int hasBugs = 0;
-       int sentScores;
-       for (Row dataRow : dataRows) {
-         String infoGiv = dataRow.getInfoGiv();
-         String infoSeek = dataRow.getInfoSeek();
-         String featRequest = dataRow.getFeatRequest();
-         String hasBug = dataRow.getHasBug();
-         String sentScore = dataRow.getSentScore();
-
-         if (infoGiv != null && infoSeek != null && featRequest != null && hasBug != null && sentScore != null) {
-           labelled++;
-
-           // Count infoGiving
-           if (infoGiv.equals("1")) {
-             infoGivs++;
-           }
-
-           // Count infoSeeking
-           if (infoSeek.equals("1")) {
-             infoSeeks++;
-           }
-
-           // Count featureRequests
-           if (featRequest.equals("1")) {
-             featRequests++;
-           }
-
-           // Count hasBug
-           if (hasBug.equals("1")) {
-             hasBugs++;
-           }
-
-
+       matrixString += "Maximum number of training documents: " + (infoGivs + infoSeeks + featRequests + hasBugs) + "\n";
+      
+       matrixString += "\nNumber of empty documents: " + empties + "\n";
+       matrixString += "Number of duplicate documents: " + sheepDupes + "\n";
+       
+       matrixString += "\nNum of apps reviewed with informative reviews: " + appReviewCount.size() + "\n";
+       for (String appName : appReviewCount.keySet()) {
+        	 matrixString += appName + ": " + appReviewCount.get(appName) + "\n";
+           System.out.println(appName + ": " + appReviewCount.get(appName));
          }
-       }
-       System.out.println("Labelled: " + labelled);
-       System.out.println("info giving: " + infoGivs);
-       System.out.println("info seeking: " + infoSeeks);
-       System.out.println("feature requests: " + featRequests);
-       System.out.println("bug reports: " + hasBugs);
-
-
-       // Count number of duplicate/empty documents
-       ArrayList<String> reviews = new ArrayList<String>();
-       int duplicates = 0;
-       int emptyDocs = 0;
-       for (Row dataRow : dataRows) {
-         String text = dataRow.getText();
-         if (text.trim().equals("")) {
-           emptyDocs++;
-         } else if (!reviews.contains(text)) {
-           reviews.add(text);
-         } else {
-           duplicates++;
-         }
-       }
-       System.out.println("Duplicates: " + duplicates);
-       System.out.println("Empty documents: " + emptyDocs);
     }
     
     public ArrayList<String> getDocs() {

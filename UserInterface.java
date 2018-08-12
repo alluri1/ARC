@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * User interface for ARC.
+ */
 public class UserInterface {
 
     private JFrame frame;
@@ -52,7 +55,7 @@ public class UserInterface {
     public void enableButtons() {
         b2.setEnabled(true);
         b3.setEnabled(true);
-        b4.setEnabled(true);
+        b4.setEnabled(false);
         exploreClass0.setEnabled(true);
         exploreClass1.setEnabled(true);
         exploreClass2.setEnabled(true);
@@ -82,7 +85,7 @@ public class UserInterface {
     
     public void createFrame() {
     	// create a frame of required dimensions
-        frame = new JFrame("NaiveBayes Classifier");
+        frame = new JFrame("App Review Classifier (ARC)");
         
         // Set the look and feel to the cross-platform look and feel,
      	// otherwise mac os will have quirks like gaps between jbuttons
@@ -203,12 +206,15 @@ public class UserInterface {
     		
     		if (e.getSource() == b2) {
     			display.setText("\n\n#############   DATA EXPLORATION   #############\n");
+    			display.append("Tokens are split on the regex [ .,&%$#!/+()-*^?:\"--]+, dropped if they contain numbers or stopwords, and stemmed using Porter's algorithm.\n\n");
     			display.append(p.termStr);
+    			display.append("\nNumber of terms: " + Integer.toString(p.termList.size()));
     			display.append(p.dataExplorationStr);
             }else if (e.getSource() == b3) {
             	display.setText("\nRunning classifier on sample 80% train/20% test set...");
             	p.trainTest();
             	b5.setEnabled(true);
+            	b4.setEnabled(true);
             }else if (e.getSource() == b4) {
             	String evaluation = p.evaluate();
             	display.append("#############   EVALUATION   #############\n\n" + evaluation);
